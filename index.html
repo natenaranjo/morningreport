@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--
+        <meta http-equiv="Content-Security-Policy" 
+            content=
+                "script-src 'nonce-jqueryXX' 'nonce-bootstrap1' 'nonce-bootstrap2' 'nonce-appMainX' 'unsafe-inline'; 
+                 object-src 'none'; 
+                 base-uri 'self'"
+        >
+        -->
+        <title>SDI Morning Report</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://smtpjs.com/v3/smtp.js"></script>
+    </head>
+    <body id="">
+        <div class="container-fluid m-0 p-0">
+            <!-- Top bar with logo -->
+            <div class="media bg-dark p-2 pl-3">
+                <img src="https://scientificdrilling.com/assets/themes/sdi/images/SDI-Company-Logo-2011-noR-White-Letters.svg" width="150px" height="50px" alt="/" />
+                <div class="w-100 h-25 d-flex flex-row justify-content-center m-auto">
+                    <button type="button" id="sendReport" class="btn btn-success m-2" disabled>Send Report</button>
+                    <button type="button" id="newWell" class="btn btn-primary m-2">New Well</button>
+                    <button type="button" id="saveWell" class="btn btn-info m-2">Save Well</button>
+                    <button type="button" id="loadWell" class="btn btn-warning m-2" data-toggle="modal" data-target="#infoModal">Load Well</button>
+                    <button tyep="button" id="deleteWell" class="btn btn-danger m-2" data-toggle="modal" data-target="#infoModal">Delete Well</button>
+                </div>
+            </div>
+            <form id="reportForm">
+                <!-- Subject line -->
+                <div class="p-4 text-center">
+                    <h3 id="subject-line"></h3>
+                </div>
+                <div class="container-fluid p-4">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg p-4">
+                                <h4 class="text-center pb-4">Well Information:</h4>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Date:</label>
+                                    <input type="date" id="today-date" class="form-control w-50 text-center" placeholder="Today's Date" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Client:</label>
+                                    <input type="text" id="client" class="form-control w-50 text-center" placeholder="Client Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Rig:</label>
+                                    <input type="text" id="rig" class="form-control w-50 text-center" placeholder="Rig Initials and Number" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Well:</label>
+                                    <input type="text" id="well" class="form-control w-50 text-center" placeholder="Well Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Job Number:</label>
+                                    <input type="text" id="job" class="form-control w-50 text-center" placeholder="Job Number" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Current Plan:</label>
+                                    <input type="text" id="current-plan" class="form-control w-50 text-center" placeholder="Current Plan#" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Daily Cost:</label>
+                                    <input type="text" id="daily-cost" class="form-control w-50 text-center" placeholder="Enter Daily Cost" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Total Cost:</label>
+                                    <input type="text" id="total-cost" class="form-control w-50 text-center" aria-label="Total Cost" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="form-floating">
+                                    <label for="floatingTextarea2" class="w-50">Comments/Issues:</label>
+                                    <textarea id="comments" class="form-control" placeholder="Leave a comment here" id="Comments / Issues" style="height: 100px"></textarea>
+                                </div> 
+                            </div>
+                            <div class="col-lg p-4">
+                                <h4 class="text-center pb-4">Well Status:</h4>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Hole Section:</label>
+                                    <select class="w-50 input-group-sm border rounded text-center text-muted" id="hole-section">
+                                        <option selected class="h6">Select Hole Section...</option>
+                                        <option value="Surface">Surface</option>
+                                        <option value="Vertical">Vertical</option>
+                                        <option value="Nudge">Nudge</option>
+                                        <option value="Tangent">Tangent</option>
+                                        <option value="Curve">Curve</option>
+                                        <option value="Lateral">Lateral</option>
+                                    </select>
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Formation:</label>
+                                    <input type="text" id="formation" class="form-control w-50 text-center" placeholder="Current Formation" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Tool Size:</label>
+                                        <select class="w-50 input-group-sm border rounded text-center text-muted" id="tool-size">
+                                        <option selected class="h6">Select Tool Size...</option>
+                                        <option value="2.75">2.75"</option>
+                                        <option value="4">4"</option>
+                                        <option value="5">5"</option>
+                                        <option value="6.5">6.5"</option>
+                                        <option value="6.75">6.75"</option>
+                                        <option value="7">7"</option>
+                                        <option value="8">8"</option>
+                                        <option value="9.5">9.5"</option>
+                                        </select>
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Pulse Width:</label>
+                                    <input type="text" id="pulse-width" class="form-control w-50 text-center" placeholder="Enter Pulse Width" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Last 24hr Footage:</label>
+                                    <input type="number" id="last" class="form-control w-50 text-center" placeholder="Last 24hr Footage" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Current Depth:</label>
+                                    <input type="number" id="cdepth" class="form-control w-50 text-center" placeholder="Current Depth" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">TD Depth:</label>
+                                    <input type="number" id="tdepth" class="form-control w-50 text-center" placeholder="Enter Expected TD Depth" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Footage Remaining:</label>
+                                    <input type="number" id="footage" class="form-control w-50 text-center" aria-label="Username" aria-describedby="basic-addon1" readonly>
+                                </div>
+                                <div class="form-floating">
+                                    <label for="floatingTextarea2" class="w-50">Last 24hr Summary:</label>
+                                    <textarea id="summary" class="form-control" placeholder="Leave a comment here" id="Last 24hr Summary" style="height: 100px"></textarea>
+                                </div>  
+                            </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6 p-4">
+                                <h4 class="text-center pb-4">Personnel:</h4>
+                                <!-- Peronnel DD, MWD, && Company Man Nates -->
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Day Company:</label>
+                                    <input type="text" id="dcompany" class="form-control w-50 text-center" placeholder="Day Company Man Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">Night Company Man:</label>
+                                    <input type="text" id="ncompany" class="form-control w-50 text-center" placeholder="Night Company Man Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">DD Day:</label>
+                                    <input type="text" id="ddd" class="form-control w-50 text-center" placeholder="Day DD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">DD Night:</label>
+                                    <input type="text" id="ndd" class="form-control w-50 text-center" placeholder="Night DD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">MWD Day:</label>
+                                    <input type="text" id="dmwd" class="form-control w-50 text-center" placeholder="Day MWD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">MWD Night:</label>
+                                    <input type="text" id="nmwd" class="form-control w-50 text-center" placeholder="Night MWD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+
+                                <h5 class="p-2 text-center">Bottom Line Check</h5>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">DD:</label>
+                                    <input type="text" id="bdd" class="form-control w-50 text-center" placeholder="DD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group-sm mb-3 d-flex flex-row">
+                                    <label class="w-50">MWD:</label>
+                                    <input type="text" id="bmwd" class="form-control w-50 text-center" placeholder="MWD Name" aria-label="Username" aria-describedby="basic-addon1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+
+                <div class="container p-4">
+                    <h3 class="text-center">Tools Status:</h3>
+                    <div class="row">
+                        <div class="col-lg p-4">
+                            <div class="d-flex flex-row justify-content-between">
+                                <h5>Pulsers:</h5>
+                                <button type="button" id="pulserAdd" class="btn btn-link btn-sm">Add Row</button>
+                            </div>
+                            <table class="table">
+                                <thead class="table-light">
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Serial</th>
+                                    <th scope="col">GPM</th>
+                                    <th scope="col">Circ Hrs.</th>
+                                    <th scope="col">Status</th>
+                                </thead>
+                                <tbody id="pulsers">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg p-4">
+                            <div class="d-flex flex-row justify-content-between">
+                                <h5>DD Tools:</h5>
+                                <button type="button" class="btn btn-link btn-sm">Add Row</button>
+                            </div>
+                            <table class="table">
+                                <thead class="table-light">
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Serial</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"></th>
+                                </thead>
+                                <tbody id="ddtools">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal to display list of wells to load -->
+        <div class="modal fade" id="infoModal" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content" id="infoModalContent">
+              <div class="modal-header"> 
+                <h4 class="modal-title" id="infoModalHeader"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body m-auto" id="infoModalBody">
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+   
+        <script nonce="appMainX" src="test.js"></script>
+        <script nonce="jqueryXX" src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script nonce="bootstrap1" src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script nonce="bootstrap2" src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+</html>
